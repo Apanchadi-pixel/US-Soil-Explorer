@@ -1,0 +1,374 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>US Soil Explorer — SSURGO Dashboard</title>
+<link rel="preconnect" href="https://unpkg.com"><link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+<style>
+:root{--bg:#f4f6f5;--card:#fff;--ink:#162c2c;--muted:#6a7c79;--edge:#dbe4df;--dark:#123a37;--green:#226e5a;--accent:#d5efe5;--warn:#fff4d8;--error:#a53737}*{box-sizing:border-box}body{margin:0;background:var(--bg);font:14px/1.5 system-ui,-apple-system,Segoe UI,Arial,sans-serif;color:var(--ink)}button,input{font:inherit}button{cursor:pointer}header{background:var(--dark);color:white;padding:16px 28px;display:flex;align-items:center;justify-content:space-between;gap:12px}h1{font-size:19px;margin:0;font-weight:750;letter-spacing:-.4px}header small{color:#b8d7cb}header a{color:#d1f1de}main{max-width:1600px;margin:auto;padding:20px 24px 40px}.toolbar{background:var(--card);border:1px solid var(--edge);border-radius:14px;padding:16px;display:flex;align-items:end;flex-wrap:wrap;gap:12px;box-shadow:0 3px 14px #0b2b1a09}.field label{display:block;font-size:12px;font-weight:700;color:var(--muted);margin-bottom:5px}.field input{border:1px solid var(--edge);border-radius:8px;padding:10px;width:134px;background:#fff}.btn{border:1px solid var(--edge);background:white;border-radius:9px;padding:10px 14px;font-weight:680;color:var(--dark)}.btn.primary{background:var(--green);border-color:var(--green);color:#fff}.btn:disabled{opacity:.45;cursor:not-allowed}.upload{display:inline-block;padding:10px 15px;border-radius:9px;background:var(--dark);color:#fff;cursor:pointer;font-weight:700}.upload input{display:none}.upload:hover,.btn.primary:hover{filter:brightness(1.08)}.hint{font-size:12px;color:var(--muted)}.status{margin-top:12px;display:flex;flex-wrap:wrap;align-items:center;gap:12px;min-height:28px}.status span{font-size:12px;color:var(--muted)}progress{width:180px;height:9px;accent-color:var(--green)}.kpis{display:grid;grid-template-columns:repeat(4,1fr);gap:13px;margin:16px 0}.kpi{padding:15px 18px;border-radius:12px;background:#fff;border:1px solid var(--edge)}.kpi strong{display:block;font-size:25px;color:var(--dark);font-variant-numeric:tabular-nums}.kpi span{color:var(--muted);font-size:12px;font-weight:670}.layout{display:grid;grid-template-columns:minmax(350px,1.18fr) minmax(340px,1fr);gap:16px;align-items:start}.panel{background:white;border:1px solid var(--edge);border-radius:14px;overflow:hidden}.panel h2{font-size:15px;margin:0}.panel-head{padding:13px 16px;border-bottom:1px solid var(--edge);display:flex;align-items:center;justify-content:space-between;gap:10px}.mapwrap{height:435px;background:#dce5df;position:relative}#map{height:100%;width:100%}.mapfallback{display:none;align-items:center;justify-content:center;text-align:center;padding:20px;height:100%;color:#506861}.detail{padding:17px;max-height:612px;overflow:auto;min-height:435px}.empty{display:grid;place-items:center;text-align:center;color:#738781;min-height:360px;padding:30px}.title-row{display:flex;justify-content:space-between;gap:12px;align-items:start}.title-row h3{font-size:21px;line-height:1.25;margin:5px 0 4px}.pill{display:inline-block;font-size:11px;padding:3px 9px;border-radius:16px;background:#e4f3ec;color:#22604c;font-weight:750}.pill.warn{background:#fff3d0;color:#946300}.muted{color:var(--muted)}.detail-section{margin-top:17px;padding-top:12px;border-top:1px solid var(--edge)}.detail-section h4{margin:0 0 9px;font-size:13px;letter-spacing:.2px}.props{display:grid;grid-template-columns:1fr 1fr;gap:9px}.prop{background:#f6f8f7;border-radius:8px;padding:9px 11px}.prop span{display:block;font-size:11px;color:var(--muted)}.prop b{display:block;font-size:13px;margin-top:2px;overflow-wrap:anywhere}.table-wrap{overflow:auto;max-height:330px}table{border-collapse:collapse;width:100%;font-size:12px}th{text-align:left;background:#f5f8f6;font-weight:760;color:#50655e;position:sticky;top:0;white-space:nowrap}td,th{padding:9px 10px;border-bottom:1px solid #edf1ef}tbody tr:hover{background:#edf5f1}tbody tr.active{background:#dff1e8}tr[data-idx]{cursor:pointer}.lower{margin-top:16px}.table-panel{max-height:450px;overflow:auto}a{color:#237563}.notice{background:#fbf7e8;border:1px solid #eee0b7;border-radius:9px;padding:10px 12px;color:#756438;font-size:12px;margin-top:12px}.err{background:#fceaea;color:#953333;padding:10px 12px;border-radius:8px;margin:10px 0;font-size:12px}footer{font-size:12px;line-height:1.7;color:var(--muted);padding:18px 2px}.tools{display:flex;align-items:center;gap:8px;flex-wrap:wrap}select#basemapSelect{border:1px solid var(--edge);border-radius:8px;padding:7px 9px;background:#fff;color:var(--ink);max-width:220px;font:inherit;font-size:12px} .mapwrap.no-basemap{background-color:#eef3f0;background-image:linear-gradient(#dfe7e2 1px,transparent 1px),linear-gradient(90deg,#dfe7e2 1px,transparent 1px);background-size:32px 32px} .mapwrap.no-basemap:after{content:"No basemap · sample points only";position:absolute;bottom:8px;left:8px;background:#ffffffe0;padding:4px 8px;border-radius:5px;font-size:11px;color:#51645b;pointer-events:none;z-index:400}.sel{border:1px solid var(--edge);border-radius:8px;padding:9px;background:#fff;color:var(--ink);font:inherit}.panel-head .sel{padding:6px 8px;font-size:12px}.tri-body{padding:16px;display:flex;flex-direction:column;align-items:center;gap:8px}#triCanvas{width:100%;max-width:620px;border:1px solid var(--edge);border-radius:8px;background:#fff}.sort{background:transparent;border:0;color:var(--green);font-size:12px;font-weight:750}.spin{display:inline-block;width:10px;height:10px;border-radius:50%;border:2px solid #b6ddc8;border-top-color:#207052;animation:spin 1s linear infinite}@keyframes spin{to{transform:rotate(360deg)}}@media(max-width:950px){.layout{grid-template-columns:1fr}.kpis{grid-template-columns:repeat(2,1fr)}main{padding:12px}.mapwrap{height:350px}}@media(max-width:540px){header{padding:14px}main{padding:8px}.kpis{gap:7px}.kpi{padding:11px}.props{grid-template-columns:1fr}.toolbar{gap:8px}.field input{width:116px}}
+</style></head><body>
+<header><div><h1>◈ US Soil Explorer</h1><small>USDA SSURGO · Soil series & taxonomy · depth-interval profile summaries (default 0–15 cm)</small></div><small>BROWSER-ONLY RESEARCH DASHBOARD · v3.2</small></header>
+<main>
+<section class="toolbar"><label class="upload">↑ Upload CSV<input type="file" id="file" accept=".csv,text/csv"></label><div class="field"><label>Latitude</label><input id="lat" type="number" step="any" value="33.8727"></div><div class="field"><label>Longitude</label><input id="lon" type="number" step="any" value="-90.1412"></div><button class="btn" id="add">+ Add point</button><div class="field"><label for="depthSel">Depth interval</label><select id="depthSel" class="sel"><option value="0-15" selected>0–15 cm (default)</option><optgroup label="From surface"><option value="0-5">0–5 cm</option><option value="0-30">0–30 cm</option><option value="0-100">0–100 cm</option></optgroup><optgroup label="GlobalSoilMap intervals"><option value="5-15">5–15 cm</option><option value="15-30">15–30 cm</option><option value="30-60">30–60 cm</option><option value="60-100">60–100 cm</option><option value="100-200">100–200 cm</option></optgroup><option value="custom">Custom…</option></select></div><div class="field" id="customDepth" hidden><label>Top – bottom (cm)</label><input id="dTop" type="number" min="0" max="300" step="1" value="0" style="width:64px"> <input id="dBot" type="number" min="1" max="300" step="1" value="15" style="width:64px"></div><button class="btn primary" id="run">Fetch USDA data</button><button class="btn" id="export" disabled>↓ Export summary CSV</button><button class="btn" id="exportC" disabled>↓ Export components CSV</button><button class="btn" id="exportH" disabled>↓ Export horizons CSV</button><button class="btn" id="clear">Clear</button></section>
+<div class="status"><span id="message">Add a point or upload a CSV containing latitude and longitude columns.</span><progress id="prog" value="0" max="100" hidden></progress><button id="retry" class="btn" hidden>Retry failed points</button><a href="sample_points.csv" download class="hint">Download example CSV</a></div>
+<div class="kpis"><div class="kpi"><strong id="kAll">0</strong><span>Loaded sampling points</span></div><div class="kpi"><strong id="kDone">0</strong><span>Successfully queried</span></div><div class="kpi"><strong id="kSeries">0</strong><span>Distinct dominant components</span></div><div class="kpi"><strong id="kFail">0</strong><span>Failed / no map unit</span></div></div>
+<div class="layout"><section class="panel"><div class="panel-head"><h2>Sampling map</h2><span class="hint">Click anywhere to inspect published U.S. soil data</span><div class="tools"><label class="hint" for="basemapSelect">Basemap</label><select id="basemapSelect" aria-label="Choose map background"><option value="imagery">USGS aerial imagery (U.S.)</option><option value="topo">USGS topographic (U.S.)</option><option value="none">No basemap</option><option value="osm">OpenStreetMap (community tiles)</option></select><span class="hint" id="mapcount">0 points</span></div></div><div class="mapwrap"><div id="map"></div><div class="mapfallback" id="mapfallback">Map tiles unavailable. You can still query and inspect points in the table below.</div></div></section><section class="panel"><div class="panel-head"><h2>Selected point · Soil profile</h2><span class="hint" id="selectedId">—</span></div><div class="detail" id="details"><div class="empty">Select a point on the map or in the table to view map units, soil series, taxonomy and soil horizons.</div></div></section></div>
+<section class="panel lower"><div class="panel-head"><h2>Sampling point registry</h2><div class="tools"><span class="hint">Click a row to inspect · Original CSV attributes and all lookup statuses are retained on export</span></div></div><div class="table-panel"><table><thead><tr><th>ID</th><th>Latitude</th><th>Longitude</th><th>Map unit</th><th>Dominant series / component</th><th>Taxonomy</th><th id="thOM">OM 0–15 cm (%)</th><th id="thClay">Clay 0–15 cm (%)</th><th>Status</th></tr></thead><tbody id="rows"><tr><td colspan="9" class="muted">No points loaded yet.</td></tr></tbody></table></div></section>
+<section class="panel lower"><div class="panel-head"><h2>Soil texture triangle (USDA)</h2><div class="tools"><label class="hint" for="triWidth">Figure width</label><select id="triWidth" class="sel"><option value="3.5" selected>3.5 in · single column</option><option value="5">5 in · 1.5 column</option><option value="7">7 in · double column</option></select><label class="hint" for="triColor">Color by</label><select id="triColor" class="sel"><option value="none">None</option><option value="order" selected>Soil order</option><option value="area">Survey area</option></select><label class="hint"><input type="checkbox" id="triLabels"> Point IDs</label><label class="hint"><input type="checkbox" id="triCaption" checked> Caption</label><button class="btn" id="triPng" disabled>↓ PNG · 1000 dpi</button><button class="btn" id="triSvg" disabled>↓ SVG · vector</button></div></div><div class="tri-body"><canvas id="triCanvas" aria-label="USDA soil texture triangle of queried points"></canvas><p class="hint" id="triNote">Points appear once sand, silt and clay are available for the selected depth interval.</p></div></section>
+<div class="notice">Nationwide point lookups cover <strong>published U.S. soil surveys, including Alaska, Hawaii and U.S. territories where available</strong>. No map-unit response is not a soil property estimate. SSURGO provides representative map-unit/component horizon estimates, <strong>not measured properties at the precise GPS point</strong>. A map unit may contain multiple soil components. Depth-interval property averages (default 0–15 cm) require full per-property horizon coverage of the selected interval. Missing values remain blank. SOC stocks require OM, bulk density, and coarse-fragment information for every overlapping horizon. Exports retain pending/error points with blank soil properties. Estimated SOC (when exported) is OM/1.724 and is an approximation, not a laboratory result. The OSD link is an external soil-series reference description, not a site-specific pedon.</div>
+<footer>Source: <a href="https://sdmdataaccess.sc.egov.usda.gov/" target="_blank" rel="noopener">USDA-NRCS Soil Data Access</a> and <a href="https://soilseries.sc.egov.usda.gov/" target="_blank" rel="noopener">Official Soil Series Descriptions</a>. Runs entirely in your browser: just open <code>index.html</code> (Internet access required; no Python or server needed). Uploaded CSVs never leave your computer; only the queried coordinate pairs and SQL are sent directly from your browser to USDA. Map backgrounds: USGS National Map imagery/topographic tiles, optional community OSM tiles, or no basemap. USGS datasets and services are publicly available; check source attributions for individual imagery. No GIS license or R packages required.</footer>
+</main>
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script>
+'use strict';
+const $=id=>document.getElementById(id), state={points:[],selected:null,markerLayer:null,map:null,busy:false,cancel:false,mapPointSignature:null};
+function esc(v){return String(v??'—').replace(/[&<>"']/g,s=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[s]));}
+function num(v){if(v===null||v===undefined||String(v).trim()==='')return null;let n=Number(v);return Number.isFinite(n)?n:null;}
+function fmt(v,d=2){let n=num(v);return n===null?'—':n.toFixed(d);}
+function notify(s){$('message').textContent=s;}
+function dominant(p){return p.data?.components?.slice().sort((a,b)=>(num(b.comppct_r)||0)-(num(a.comppct_r)||0))[0]||null;}
+function unit(p){let c=dominant(p);return p.data?.units?.find(x=>String(x.mukey)===String(c?.mukey))||p.data?.units?.[0]||null;}
+// Depth interval: default 0–15 cm. All horizons are already fetched, so changing depth never re-queries USDA.
+state.depth={top:0,bottom:15};
+const KEYS=['om_r','claytotal_r','sandtotal_r','silttotal_r','dbthirdbar_r','ph1to1h2o_r','ec_r','awc_r','ksat_r','cec7_r','caco3_r','gypsum_r','sar_r'];
+function dl(sep='–'){return `${state.depth.top}${sep}${state.depth.bottom} cm`;}
+function dfile(){return `${state.depth.top}_${state.depth.bottom}cm`;}
+function aggregate(p,c,top=state.depth.top,bottom=state.depth.bottom){
+ if(!p?.data||!c)return null;
+ const depth=bottom-top;
+ const hs=(p.data.horizons||[]).filter(h=>String(h.cokey)===String(c.cokey));
+ const out={coverage:0,valid:{},stock:null,stock_status:'insufficient_data',top,bottom};
+ for(const k of KEYS){out[k]=null;out.valid[k]=0;}
+ let intervals=[],stock=0,mass=0,stockCover=0;
+ for(const h of hs){const a=num(h.hzdept_r),b=num(h.hzdepb_r);if(a===null||b===null||b<=a)continue;
+  const lo=Math.max(top,a),hi=Math.min(bottom,b),th=Math.max(0,hi-lo);if(!th)continue;intervals.push([lo,hi]);
+  for(const k of KEYS){const v=num(h[k]);if(v===null)continue;out[k+'_sum']=(out[k+'_sum']||0)+v*th;out.valid[k]+=th;}
+  const om=num(h.om_r),bd=num(h.dbthirdbar_r),cf=num(h.fragvol_r);
+  if(om!==null&&bd!==null&&cf!==null&&cf>=0&&cf<=100){const sm=bd*th*(1-cf/100);stock+=om/1.724*sm;mass+=sm;stockCover+=th;}
+ }
+ intervals.sort((x,y)=>x[0]-y[0]);let edge=top;for(const [lo,hi] of intervals){if(lo>edge+1e-6)break;edge=Math.max(edge,hi);}out.coverage=Math.min(depth,edge-top);out.coverage_pct=100*out.coverage/depth;
+ for(const k of KEYS){if(out.valid[k]>=depth-1e-6)out[k]=out[k+'_sum']/out.valid[k];}
+ out.soc_est=out.om_r===null?null:out.om_r/1.724;
+ if(stockCover>=depth-1e-6&&out.coverage>=depth-1e-6){out.stock=stock;out.soc_mass_weighted=mass?stock/mass:null;out.stock_status='estimated_from_OM_BD_fragments';}
+ else out.stock_status='missing_OM_BD_coarse_fragments_or_depth';
+ return out;
+}
+function topSummary(p){return aggregate(p,dominant(p));}
+const val=x=>x===null||x===undefined?'':x;
+function seriesUrl(c){let name=String(c?.compname||'').trim();if(!name||!/^[a-zA-Z][a-zA-Z -]*$/.test(name))return null;const name0=name.split(' ')[0].toUpperCase();return 'https://soilseries.sc.egov.usda.gov/OSD_Docs/'+name0[0]+'/'+encodeURIComponent(name0)+'.html';}
+function props(arr){return '<div class="props">'+arr.map(([a,b])=>`<div class="prop"><span>${esc(a)}</span><b>${esc(b)}</b></div>`).join('')+'</div>';}
+function detail(){const p=state.points[state.selected];if(!p){$('details').innerHTML='<div class="empty">Select a point on the map or in the table to view soil information.</div>';$('selectedId').textContent='—';return;}$('selectedId').textContent=p.id;let html=`<div class="title-row"><div><span class="pill">${esc(p.id)}</span><h3>${esc(unit(p)?.muname||'Soil lookup')}</h3><span class="muted">${fmt(p.lat,6)}°, ${fmt(p.lon,6)}°</span></div><a href="https://www.google.com/maps?q=${p.lat},${p.lon}" target="_blank" rel="noopener" class="btn" style="text-decoration:none">Map ↗</a></div>`;
+if(p.status==='pending'){html+='<p class="muted">Query not started. Click “Fetch USDA data”.</p>';}else if(p.status==='loading'){html+='<p class="muted"><span class="spin"></span> Retrieving SSURGO data…</p>';}else if(p.status==='error'){html+=`<div class="err">${esc(p.error||'Unknown error')}</div>`;}else if(p.status==='no_map_unit'){html+='<div class="notice">No published SSURGO map unit was found at this point. Some U.S. locations, including remote parts of Alaska, have incomplete survey coverage; points outside U.S. coverage also return no map unit.</div>';}else{
+const c=dominant(p),u=unit(p),t=topSummary(p),url=seriesUrl(c);html+='<div class="detail-section"><h4>Map unit & dominant component</h4>'+props([['Map unit key',u?.mukey],['Map unit symbol',u?.musym],['Map unit name',u?.muname],['Survey area',u?.areasymbol],['Component / soil series',c?.compname],['Map unit composition',c?.comppct_r==null?'—':c.comppct_r+'%'],['Drainage class',c?.drainagecl],['Component kind',c?.compkind]])+'</div>';
+html+='<div class="detail-section"><h4>Taxonomic description</h4>'+props([['Soil order',c?.taxorder],['Suborder',c?.taxsuborder],['Great group',c?.taxgrtgroup],['Subgroup',c?.taxsubgrp],['Full taxonomic class',c?.taxclname],['Particle-size family',c?.taxpartsize],['Temperature regime',c?.taxtempcl],['Moisture subclass',c?.taxmoistscl]])+(url?`<p><a target="_blank" rel="noopener" href="${url}">Open official soil series description ↗</a></p>`:'<p class="hint">An official series description may not exist for a non-series component.</p>')+'</div>';
+html+=`<div class="detail-section"><h4>${dl()}, representative horizon-weighted properties</h4>`+props([['Organic matter (%)',fmt(t?.om_r)],['Estimated SOC (%) · OM/1.724',fmt(t?.soc_est)],['Clay (%)',fmt(t?.claytotal_r)],['Sand (%)',fmt(t?.sandtotal_r)],['Silt (%)',fmt(t?.silttotal_r)],['Bulk density (g/cm³)',fmt(t?.dbthirdbar_r)],['pH (1:1 H₂O)',fmt(t?.ph1to1h2o_r)],['Horizon thickness covered',`${fmt(t?.coverage,0)} of ${state.depth.bottom-state.depth.top} cm`]])+'</div>';
+html+=`<div class="detail-section"><h4>Physical, chemical and estimated carbon (${dl()})</h4>`+props([['Available water capacity (cm/cm)',fmt(t?.awc_r)],['Ksat (µm/s)',fmt(t?.ksat_r)],['CEC7 (cmol(+)/kg)',fmt(t?.cec7_r)],['CaCO3 (%)',fmt(t?.caco3_r)],['Gypsum (%)',fmt(t?.gypsum_r)],['SAR',fmt(t?.sar_r)],['Electrical conductivity (dS/m)',fmt(t?.ec_r)],['Estimated SOC stock (Mg C/ha)',fmt(t?.stock)],['Stock calculation status',t?.stock_status]])+'</div>';
+html+='<div class="detail-section"><h4>Hydrology, land management and quality</h4>'+props([['Hydrologic group',c?.hydgrp],['Hydric rating',c?.hydricrating],['Farmland class',c?.farmlndcl],['Slope (%)',c?.slope_r],['Irrigated capability class',c?.irrcapcl],['Nonirrigated capability class',c?.nirrcapcl],['Water table minimum (cm)',c?.mingswatertable_r],[`${dl()} covered (%)`,fmt(t?.coverage_pct)],['Valid OM depth (cm)',fmt(t?.valid?.om_r)],['Valid BD depth (cm)',fmt(t?.valid?.dbthirdbar_r)],['Retrieved at (UTC)',p.data.retrieved_at],['Optional data warnings',(p.data.supplementary_warnings||[]).join('; ')||'None'],['Source','USDA SSURGO / SDA']])+'</div>';
+const comps=(p.data.components||[]);if(comps.length>1){html+='<div class="detail-section"><h4>Other mapped components</h4><div class="table-wrap"><table><thead><tr><th>Component</th><th>Share</th><th>Taxonomic subgroup</th></tr></thead><tbody>'+comps.map(x=>`<tr><td>${esc(x.compname)}</td><td>${fmt(x.comppct_r,0)}%</td><td>${esc(x.taxsubgrp)}</td></tr>`).join('')+'</tbody></table></div></div>';}
+const hs=p.data.horizons.filter(h=>String(h.cokey)===String(c?.cokey));html+='<div class="detail-section"><h4>Representative horizon sequence</h4><div class="table-wrap"><table><thead><tr><th>Horizon</th><th>Depth (cm)</th><th>OM (%)</th><th>Clay (%)</th><th>BD</th><th>pH</th></tr></thead><tbody>'+hs.map(h=>`<tr><td>${esc(h.hzname)}</td><td>${esc(h.hzdept_r)}–${esc(h.hzdepb_r)}</td><td>${fmt(h.om_r)}</td><td>${fmt(h.claytotal_r)}</td><td>${fmt(h.dbthirdbar_r)}</td><td>${fmt(h.ph1to1h2o_r)}</td></tr>`).join('')+'</tbody></table></div></div>';
+}html+='<p class="hint" style="margin-top:12px">SSURGO estimates are mapped component-level values, not laboratory observations at this GPS location.</p>';$('details').innerHTML=html;}
+function select(i){state.selected=i;refreshTable();detail();const p=state.points[i];if(state.map)state.map.panTo([p.lat,p.lon],{animate:true});}
+function refreshTable(){const body=$('rows');body.innerHTML=state.points.length?state.points.map((p,i)=>{let c=dominant(p),u=unit(p),t=topSummary(p);let badge=p.status==='ok'?'✓ Complete':p.status==='loading'?'⏳ Loading':p.status==='error'?'⚠ Error':p.status==='no_map_unit'?'No map unit':'Pending';return `<tr data-idx="${i}" class="${state.selected===i?'active':''}"><td>${esc(p.id)}</td><td>${fmt(p.lat,5)}</td><td>${fmt(p.lon,5)}</td><td>${esc(u?.muname||'—')}</td><td>${esc(c?.compname||'—')}</td><td>${esc(c?.taxsubgrp||'—')}</td><td>${fmt(t?.om_r)}</td><td>${fmt(t?.claytotal_r)}</td><td>${badge}</td></tr>`;}).join(''):'<tr><td colspan="9" class="muted">No points loaded yet.</td></tr>';body.querySelectorAll('tr[data-idx]').forEach(tr=>tr.addEventListener('click',()=>select(Number(tr.dataset.idx))));}
+function counters(){const good=state.points.filter(x=>x.status==='ok').length,fail=state.points.filter(x=>x.status==='error'||x.status==='no_map_unit').length;$('kAll').textContent=state.points.length;$('kDone').textContent=good;$('kFail').textContent=fail;$('kSeries').textContent=new Set(state.points.filter(x=>x.status==='ok').map(x=>dominant(x)?.compname).filter(Boolean)).size;$('export').disabled=state.points.length===0;$('exportC').disabled=!state.points.some(p=>p.data?.components?.length);$('exportH').disabled=!state.points.some(p=>p.data?.horizons?.length);$('mapcount').textContent=state.points.length+' points';$('retry').hidden=!fail||state.busy;}
+function refreshMap(){
+ if(!state.map)return;
+ if(state.markerLayer)state.markerLayer.clearLayers();
+ const pts=[];
+ state.points.forEach((p,i)=>{
+  const color=p.status==='ok'?'#247a5a':p.status==='error'?'#cc4a4a':p.status==='no_map_unit'?'#bf8b39':'#6285a0';
+  const marker=L.circleMarker([p.lat,p.lon],{radius:9,weight:3,color:state.selected===i?'#183d42':'#fff',fillColor:color,fillOpacity:.98,bubblingMouseEvents:false}).addTo(state.markerLayer);
+  marker.bindTooltip(esc(p.id)+' · '+esc(dominant(p)?.compname||p.status));
+  marker.on('click',e=>{if(e.originalEvent)L.DomEvent.stopPropagation(e.originalEvent);select(i);if(p.status==='pending'||p.status==='error')lookupOne(i);});
+  pts.push([p.lat,p.lon]);
+ });
+ // Only adjust map extent when coordinates change, never on status updates.
+ const signature=state.points.map(p=>`${p.lat},${p.lon}`).join('|');
+ if(signature!==state.mapPointSignature){
+  state.mapPointSignature=signature;
+  if(pts.length===1)state.map.setView(pts[0],11);
+  else if(pts.length>1)state.map.fitBounds(pts,{padding:[25,25],maxZoom:12});
+ }
+}
+
+function update(){$('thOM').textContent=`OM ${dl()} (%)`;$('thClay').textContent=`Clay ${dl()} (%)`;refreshTable();counters();detail();refreshMap();drawTrianglePreview();}
+function addPoint(id,lat,lon,extra={}){lat=num(lat);lon=num(lon);if(lat===null||lon===null||lat< -90||lat>90||lon< -180||lon>180)return false;const used=new Set(state.points.map(p=>p.id));let stem=String(id||'P'+(state.points.length+1)),final=stem,n=2;while(used.has(final)){final=stem+'_'+n++;}state.points.push({id:final,lat,lon,extra,status:'pending',data:null,error:null});return true;}
+function parseCSV(raw){let records=[],cur=[],field='',quoted=false;raw=raw.replace(/^\ufeff/,'');for(let i=0;i<raw.length;i++){let ch=raw[i];if(ch==='"'){if(quoted&&raw[i+1]==='"'){field+='"';i++;}else quoted=!quoted;}else if(ch===','&&!quoted){cur.push(field);field='';}else if((ch==='\n'||ch==='\r')&&!quoted){if(ch==='\r'&&raw[i+1]==='\n')i++;cur.push(field);field='';if(cur.some(s=>s.trim()!==''))records.push(cur);cur=[];}else field+=ch;}cur.push(field);if(cur.some(s=>s.trim()!==''))records.push(cur);return records;}
+function normalize(s){return String(s).toLowerCase().trim().replace(/[\s_\-().°]+/g,'');}
+$('file').addEventListener('change',async e=>{let f=e.target.files[0];if(!f)return;try{let rows=parseCSV(await f.text());if(rows.length<2)throw Error('CSV has no data rows.');let head=rows[0],norm=head.map(normalize),lati=norm.findIndex(s=>['latitude','lat','y','gpslatitude'].includes(s)),loni=norm.findIndex(s=>['longitude','long','lon','lng','x','gpslongitude'].includes(s));if(lati<0||loni<0)throw Error('Could not identify latitude and longitude columns. Use Latitude, Longitude, lat, lon, or long.');let idi=norm.findIndex(s=>['sampleid','sample','id','pointid','siteid'].includes(s)),count=0,skip=0;for(let i=1;i<rows.length;i++){const r=rows[i],extra={};head.forEach((h,j)=>extra[h]=r[j]??'');if(addPoint(idi<0?'P'+(state.points.length+1):r[idi],r[lati],r[loni],extra))count++;else skip++;}notify(`Imported ${count} points from ${f.name}. ${skip} rows skipped (invalid/out-of-bounds).`);update();if(state.selected===null&&count)select(0);}catch(err){notify('CSV error: '+err.message);}e.target.value='';});
+$('add').addEventListener('click',()=>{if(addPoint(null,$('lat').value,$('lon').value)){notify('Point added. Click “Fetch USDA data” to retrieve properties.');update();select(state.points.length-1);}else notify('Invalid WGS84 latitude/longitude.');});
+$('clear').addEventListener('click',()=>{if(state.busy){notify('Allow the current lookup to finish before clearing.');return;}state.points=[];state.selected=null;notify('Cleared all points.');update();});
+$('retry').addEventListener('click',()=>run(true));$('run').addEventListener('click',()=>run(false));
+// ---------- Browser-side USDA Soil Data Access client (no Python server needed) ----------
+// SDA accepts cross-origin requests. A form-encoded POST with no custom headers is a "simple" CORS request (no preflight).
+const SDA_URL='https://sdmdataaccess.sc.egov.usda.gov/Tabular/post.rest',SDA_CACHE=new Map(),SDA_MAX_AGE=6*3600*1000;
+class NetworkError extends Error{constructor(m){super(m);this.network=true;}}
+const sleep=ms=>new Promise(r=>setTimeout(r,ms));
+async function querySDA(sql){
+ let last=null;
+ for(let attempt=0;attempt<2;attempt++){
+  try{
+   const ctrl=new AbortController(),timer=setTimeout(()=>ctrl.abort(),45000);let res;
+   try{res=await fetch(SDA_URL,{method:'POST',body:new URLSearchParams({query:sql,format:'JSON+COLUMNNAME'}),signal:ctrl.signal,cache:'no-store'});}
+   catch(e){throw new NetworkError(e.name==='AbortError'?'USDA request timed out after 45 s':'network/CORS: '+e.message);}
+   finally{clearTimeout(timer);}
+   const text=(await res.text()).replace(/^﻿/,'');
+   if(!res.ok)throw new Error(`USDA HTTP ${res.status}: ${text.replace(/<[^>]+>/g,' ').replace(/\s+/g,' ').trim().slice(0,300)}`);
+   if(!text.trim())return [];                       // SDA returns an empty body for zero rows
+   let payload;try{payload=JSON.parse(text);}catch{throw new Error('USDA returned non-JSON: '+text.slice(0,300));}
+   if(payload&&payload.Error)throw new Error(String(payload.Error));
+   if(!payload||!Array.isArray(payload.Table))return [];   // e.g. {} for zero rows
+   const rows=payload.Table;if(!rows.length)return [];
+   const headers=rows[0].map(v=>String(v).toLowerCase());   // JSON+COLUMNNAME: header row, then data rows
+   return rows.slice(1).map(r=>Object.fromEntries(headers.map((h,i)=>[h,r[i]])));
+  }catch(e){last=e;if(attempt===0)await sleep(700);}
+ }
+ if(last?.network)throw last;
+ throw new Error('USDA request failed: '+(last?.message||last));
+}
+function cacheQuery(key,sql){
+ const hit=SDA_CACHE.get(key);if(hit&&Date.now()-hit.t<SDA_MAX_AGE)return hit.p;
+ const p=querySDA(sql);SDA_CACHE.set(key,{t:Date.now(),p});p.catch(()=>SDA_CACHE.delete(key));   // share in-flight requests; never cache failures
+ return p;
+}
+const COMP_FIELDS=['mukey','cokey','compname','comppct_r','majcompflag','compkind','drainagecl','taxorder','taxsuborder','taxgrtgroup','taxsubgrp','taxclname','taxpartsize','taxpartsizemod','taxceactcl','taxreaction','taxtempcl','taxmoistscl','taxfamother'];
+const HZ_FIELDS=['mukey','cokey','compname','chkey','hzname','hzdept_r','hzdepb_r','om_r','dbthirdbar_r','claytotal_r','sandtotal_r','silttotal_r','ph1to1h2o_r','ec_r'];
+const pick=(o,ks)=>Object.fromEntries(ks.map(k=>[k,o[k]===undefined?null:o[k]]));
+async function lookupSDA(lat,lon){
+ lat=Number(lat);lon=Number(lon);
+ if(!Number.isFinite(lat)||!Number.isFinite(lon)||lat<-90||lat>90||lon<-180||lon>180)throw new Error('Invalid latitude/longitude: expected WGS84 decimal degrees.');
+ const la=lat.toFixed(7),lo=lon.toFixed(7);   // validated numbers only, so no SQL injection is possible
+ const units=await cacheQuery('point:'+la+','+lo,"SELECT m.mukey, m.muname, m.musym, l.areasymbol, l.areaname FROM mapunit m JOIN legend l ON m.lkey = l.lkey WHERE m.mukey IN (SELECT * FROM SDA_Get_Mukey_from_intersection_with_WktWgs84('point("+lo+" "+la+")'))");
+ if(!units.length)return {lat,lon,status:'no_map_unit',units:[],components:[],horizons:[]};
+ const mukeys=[...new Set(units.map(r=>String(r.mukey??'')).filter(s=>/^\d+$/.test(s)))].sort();
+ if(!mukeys.length)throw new Error('Unexpected map unit identifiers returned by USDA.');
+ const ids=mukeys.join(',');
+ const full="SELECT c.mukey, c.cokey, c.compname, c.comppct_r, c.majcompflag, c.compkind, c.drainagecl, c.taxorder, c.taxsuborder, c.taxgrtgroup, c.taxsubgrp, c.taxclname, c.taxpartsize, c.taxpartsizemod, c.taxceactcl, c.taxreaction, c.taxtempcl, c.taxmoistscl, c.taxfamother, h.chkey, h.hzname, h.hzdept_r, h.hzdepb_r, h.om_r, h.dbthirdbar_r, h.claytotal_r, h.sandtotal_r, h.silttotal_r, h.ph1to1h2o_r, h.ec_r FROM component c LEFT JOIN chorizon h ON c.cokey = h.cokey WHERE c.mukey IN ("+ids+") ORDER BY c.comppct_r DESC, c.cokey, h.hzdept_r";
+ const basic="SELECT c.mukey, c.cokey, c.compname, c.comppct_r, c.majcompflag, c.compkind, c.drainagecl, c.taxorder, c.taxsubgrp, c.taxclname, h.chkey, h.hzname, h.hzdept_r, h.hzdepb_r, h.om_r, h.dbthirdbar_r, h.claytotal_r, h.sandtotal_r, h.silttotal_r, h.ph1to1h2o_r FROM component c LEFT JOIN chorizon h ON c.cokey = h.cokey WHERE c.mukey IN ("+ids+") ORDER BY c.comppct_r DESC, c.cokey, h.hzdept_r";
+ let rows;try{rows=await cacheQuery('horizons_v2:'+ids,full);}catch(e){if(e.network)throw e;rows=await cacheQuery('horizons_basic:'+ids,basic);}   // older SSURGO vintages lack some columns
+ const components=[],horizons=[],seen=new Set();
+ for(const row of rows){const ck=String(row.cokey??'');if(!seen.has(ck)){components.push(pick(row,COMP_FIELDS));seen.add(ck);}
+  if(row.hzdept_r!=null&&row.hzdepb_r!=null)horizons.push(pick(row,HZ_FIELDS));}
+ const warnings=[],optional=[
+  ['component','cokey','SELECT cokey, hydgrp, hydricrating, slope_r, farmlndcl, irrcapcl, nirrcapcl, runoff, mingswatertable_r FROM component WHERE mukey IN ('+ids+')',components],
+  ['horizon','chkey','SELECT h.chkey, h.awc_r, h.ksat_r, h.cec7_r, h.caco3_r, h.gypsum_r, h.sar_r, h.ec_r FROM chorizon h JOIN component c ON h.cokey=c.cokey WHERE c.mukey IN ('+ids+')',horizons],
+  ['fragments','chkey','SELECT f.chkey, SUM(f.fragvol_r) AS fragvol_r FROM chfrags f JOIN chorizon h ON f.chkey=h.chkey JOIN component c ON h.cokey=c.cokey WHERE c.mukey IN ('+ids+') GROUP BY f.chkey',horizons]];
+ for(const [kind,key,q,items] of optional){
+  try{const recs=await cacheQuery('supp_v3:'+kind+':'+ids,q),by=new Map(recs.map(r=>[String(r[key]),r]));
+   for(const it of items){const r=by.get(String(it[key]));if(r)for(const [k,v] of Object.entries(r))if(k!==key)it[k]=v;}}
+  catch(e){warnings.push(kind+': '+String(e.message||e).slice(0,140));}
+ }
+ return {lat,lon,status:'ok',units,components,horizons,supplementary_warnings:warnings,retrieved_at:new Date().toISOString().replace(/\.\d{3}Z$/,'Z')};
+}
+// Direct browser lookup first; if a firewall blocks it and the page was opened via the optional server.py, use that as a fallback.
+async function fetchLookup(lat,lon){
+ try{return await lookupSDA(lat,lon);}
+ catch(err){
+  if(!err.network)throw err;
+  if(/^https?:$/.test(location.protocol)){
+   try{const res=await fetch('/api/lookup',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({lat,lon})});
+    if(res.ok){const d=await res.json();d.supplementary_warnings=[...(d.supplementary_warnings||[]),'retrieved via local server.py fallback'];return d;}}catch{}
+  }
+  throw new Error(`Could not reach USDA Soil Data Access from this browser (${err.message}). Check your Internet connection; if your institution's network blocks it, run the optional server.py fallback (see README).`);
+ }
+}
+// Look up a single map-clicked point immediately; keep existing batch lookups unchanged.
+async function lookupOne(i){
+ const p=state.points[i];
+ if(!p||p.status==='loading'||p.status==='ok')return;
+ p.status='loading';p.error=null;update();notify(`Looking up soil for ${p.id}…`);
+ try{
+  const data=await fetchLookup(p.lat,p.lon);
+  p.data=data;p.status=data.status;p.error=null;
+  notify(p.status==='ok'?`Soil data loaded for ${p.id}.`:`No mapped soil unit found at ${p.id}.`);
+ }catch(err){p.status='error';p.error=err.message;notify(`USDA query failed: ${err.message}`);}
+ update();
+}
+async function inspectMapCoordinate(lat,lon){
+ // Reuse an existing point when clicking close to a marker, avoiding duplicates.
+ const existing=state.points.findIndex(p=>Math.abs(p.lat-lat)<0.00008&&Math.abs(p.lon-lon)<0.00008);
+ if(existing>=0){select(existing);await lookupOne(existing);return;}
+ const id='Map_Point_'+String(state.points.length+1).padStart(3,'0');
+ if(!addPoint(id,lat,lon)){
+  notify('Invalid WGS84 coordinate. USDA soil surveys cover published U.S. locations only.');return;
+ }
+ const i=state.points.length-1;
+ state.selected=i;
+ state.mapPointSignature=state.points.map(p=>`${p.lat},${p.lon}`).join('|');
+ update();
+ // Stay at the clicked location; no need to refit all point bounds after each lookup.
+ await lookupOne(i);
+}
+async function run(retry){if(state.busy)return;let targets=state.points.map((p,i)=>({p,i})).filter(({p})=>retry?['error','no_map_unit'].includes(p.status):p.status!=='ok');if(!targets.length){notify('Nothing to query. Add/import points, or retry failed points.');return;}state.busy=true;$('run').disabled=true;$('retry').hidden=true;$('prog').hidden=false;$('prog').max=targets.length;$('prog').value=0;let finished=0;const concurrency=3;let next=0;async function worker(){while(next<targets.length){let {p,i}=targets[next++];p.status='loading';if(i===state.selected)detail();try{const data=await fetchLookup(p.lat,p.lon);p.data=data;p.status=data.status;p.error=null;}catch(err){p.status='error';p.error=err.message;}finished++;$('prog').value=finished;notify(`Retrieved ${finished} of ${targets.length} points · USDA Soil Data Access`);if(i===state.selected)detail();if(finished%3===0||finished===targets.length)update();}}
+await Promise.all(Array.from({length:Math.min(concurrency,targets.length)},worker));state.busy=false;$('run').disabled=false;$('prog').hidden=true;notify(`Finished. ${state.points.filter(p=>p.status==='ok').length} successful of ${state.points.length} loaded points. Click a marker or table row, or click anywhere on the map to query a new point.`);update();}
+function csvCell(v){v=v===null||v===undefined?'':String(v);return /[",\n\r]/.test(v)?'"'+v.replace(/"/g,'""')+'"':v;}
+function saveCsv(name,rows){if(!rows.length)return;const cols=[...new Set(rows.flatMap(x=>Object.keys(x)))];const text=[cols.join(','),...rows.map(row=>cols.map(c=>csvCell(row[c])).join(','))].join('\r\n');const blob=new Blob(['\ufeff',text],{type:'text/csv;charset=utf-8'});const url=URL.createObjectURL(blob),a=document.createElement('a');a.href=url;a.download=name;document.body.append(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),1000);}
+function summaryRow(p){
+ const c=dominant(p),u=unit(p),t=topSummary(p),v=t?.valid||{};
+ return {...p.extra,Sample_ID:p.id,Latitude:p.lat,Longitude:p.lon,Status:p.status,Error:p.error||'',MUKEY:val(u?.mukey),Map_Unit:val(u?.muname),Map_Unit_Symbol:val(u?.musym),Survey_Area:val(u?.areasymbol),Survey_Name:val(u?.areaname),Dominant_Series_or_Component:val(c?.compname),Component_Key:val(c?.cokey),Component_Percent:val(c?.comppct_r),Major_Component:val(c?.majcompflag),Component_Kind:val(c?.compkind),Number_of_Components:p.data?.components?.length??'',Soil_Order:val(c?.taxorder),Suborder:val(c?.taxsuborder),Great_Group:val(c?.taxgrtgroup),Subgroup:val(c?.taxsubgrp),Taxonomic_Class:val(c?.taxclname),Particle_Size_Class:val(c?.taxpartsize),Mineralogy_Family_Other:val(c?.taxfamother),Temperature_Class:val(c?.taxtempcl),Soil_Series_Description:seriesUrl(c)||'',
+ Depth_Top_cm:state.depth.top,Depth_Bottom_cm:state.depth.bottom,USDA_Texture_Class:val(textureClass(t?.sandtotal_r,t?.claytotal_r,t?.silttotal_r)),Profile_Coverage_cm:val(t?.coverage),Profile_Coverage_pct:val(t?.coverage_pct),Sand_pct:val(t?.sandtotal_r),Silt_pct:val(t?.silttotal_r),Clay_pct:val(t?.claytotal_r),Bulk_Density_g_cm3:val(t?.dbthirdbar_r),AWC_cm_cm:val(t?.awc_r),Ksat_um_s:val(t?.ksat_r),OM_pct:val(t?.om_r),SOC_from_OM_est_pct:val(t?.soc_est),SOC_mass_weighted_est_pct:val(t?.soc_mass_weighted),SOC_stock_est_Mg_C_ha:val(t?.stock),SOC_stock_status:t?.stock_status||'',pH_thickness_weighted:val(t?.ph1to1h2o_r),EC_dS_m:val(t?.ec_r),CEC7_cmol_kg:val(t?.cec7_r),CaCO3_pct:val(t?.caco3_r),Gypsum_pct:val(t?.gypsum_r),SAR:val(t?.sar_r),Drainage_Class:val(c?.drainagecl),Hydrologic_Group:val(c?.hydgrp),Hydric_Rating:val(c?.hydricrating),Farmland_Class:val(c?.farmlndcl),Slope_pct:val(c?.slope_r),Irrigated_Capability_Class:val(c?.irrcapcl),Nonirrigated_Capability_Class:val(c?.nirrcapcl),Min_Water_Table_cm:val(c?.mingswatertable_r),Runoff:val(c?.runoff),OM_valid_cm:v.om_r??'',Clay_valid_cm:v.claytotal_r??'',BD_valid_cm:v.dbthirdbar_r??'',pH_valid_cm:v.ph1to1h2o_r??'',Source:'USDA SSURGO SDA',Field_Provenance:'field_dictionary.csv',Spatial_Support:'Representative map unit component',Aggregation:'Full-coverage thickness weighted; no missing-value filling',SOC_Method:'OM / 1.724, approximate',Retrieved_At_UTC:val(p.data?.retrieved_at),Supplemental_Warnings:(p.data?.supplementary_warnings||[]).join(' | ')};
+}
+$('export').addEventListener('click',()=>saveCsv(`us_ssurgo_point_summary_${dfile()}.csv`,state.points.map(summaryRow)));
+$('exportC').addEventListener('click',()=>{const rows=[];for(const p of state.points){for(const c of p.data?.components||[]){const u=(p.data.units||[]).find(x=>String(x.mukey)===String(c.mukey))||unit(p),t=aggregate(p,c);rows.push({Sample_ID:p.id,Latitude:p.lat,Longitude:p.lon,MUKEY:c.mukey,Map_Unit:u?.muname,Survey_Area:u?.areasymbol,...c,Depth_Top_cm:state.depth.top,Depth_Bottom_cm:state.depth.bottom,OM_pct:val(t?.om_r),Sand_pct:val(t?.sandtotal_r),Silt_pct:val(t?.silttotal_r),Clay_pct:val(t?.claytotal_r),USDA_Texture_Class:val(textureClass(t?.sandtotal_r,t?.claytotal_r,t?.silttotal_r)),Bulk_Density:val(t?.dbthirdbar_r),Horizon_Coverage_pct:val(t?.coverage_pct),Estimated_SOC_Stock_Mg_C_ha:val(t?.stock),SOC_Stock_Status:t?.stock_status||'',Source:'USDA SSURGO component / chorizon',Retrieved_At_UTC:p.data.retrieved_at});}}saveCsv(`us_ssurgo_components_${dfile()}.csv`,rows);});
+$('exportH').addEventListener('click',()=>{const rows=[];for(const p of state.points){for(const h of p.data?.horizons||[]){const c=(p.data.components||[]).find(x=>String(x.cokey)===String(h.cokey)),a=num(h.hzdept_r),b=num(h.hzdepb_r);rows.push({Sample_ID:p.id,Latitude:p.lat,Longitude:p.lon,Component:val(c?.compname),Component_Percent:val(c?.comppct_r),Taxonomic_Class:val(c?.taxclname),...h,Overlap_0_15_cm:a===null||b===null?'':Math.max(0,Math.min(15,b)-Math.max(0,a)),...((state.depth.top!==0||state.depth.bottom!==15)?{[`Overlap_${dfile()}`]:a===null||b===null?'':Math.max(0,Math.min(state.depth.bottom,b)-Math.max(state.depth.top,a))}:{}),SOC_from_OM_est_pct:num(h.om_r)===null?'':num(h.om_r)/1.724,Source:'USDA SSURGO chorizon',Retrieved_At_UTC:p.data.retrieved_at});}}saveCsv('us_ssurgo_horizons.csv',rows);});
+// ---------- USDA texture class and texture triangle ----------
+// USDA-NRCS textural class rules (Soil Survey Manual). Inputs are normalized to sum to 100%.
+function textureClass(sa,cl,si){sa=num(sa);cl=num(cl);si=num(si);if(sa===null||cl===null||si===null)return null;const t=sa+cl+si;if(t<=0)return null;sa=sa*100/t;cl=cl*100/t;si=si*100/t;
+ if(si+1.5*cl<15)return 'Sand';
+ if(si+2*cl<30)return 'Loamy sand';
+ if((cl>=7&&cl<20&&sa>52)||(cl<7&&si<50))return 'Sandy loam';
+ if(cl>=7&&cl<27&&si>=28&&si<50&&sa<=52)return 'Loam';
+ if((si>=50&&cl>=12&&cl<27)||(si>=50&&si<80&&cl<12))return 'Silt loam';
+ if(si>=80&&cl<12)return 'Silt';
+ if(cl>=20&&cl<35&&si<28&&sa>45)return 'Sandy clay loam';
+ if(cl>=27&&cl<40&&sa>20&&sa<=45)return 'Clay loam';
+ if(cl>=27&&cl<40&&sa<=20)return 'Silty clay loam';
+ if(cl>=35&&sa>45)return 'Sandy clay';
+ if(cl>=40&&si>=40)return 'Silty clay';
+ if(cl>=40&&sa<=45&&si<40)return 'Clay';
+ return null;}
+// Class polygons as [sand %, clay %] vertices (silt = 100 − sand − clay).
+const TEX_POLY={'Clay':[[0,100],[45,55],[45,40],[20,40],[0,60]],'Silty clay':[[0,60],[20,40],[0,40]],'Sandy clay':[[45,55],[65,35],[45,35]],'Clay loam':[[20,40],[45,40],[45,27],[20,27]],'Silty clay loam':[[0,40],[20,40],[20,27],[0,27]],'Sandy clay loam':[[45,35],[65,35],[80,20],[52,20],[45,27]],'Loam':[[45,27],[52,20],[52,7],[43,7],[23,27]],'Silt loam':[[0,27],[23,27],[43,7],[50,0],[20,0],[8,12],[0,12]],'Silt':[[0,12],[8,12],[20,0],[0,0]],'Sandy loam':[[52,20],[80,20],[85,15],[70,0],[50,0],[43,7],[52,7]],'Loamy sand':[[70,0],[85,15],[90,10],[85,0]],'Sand':[[85,0],[90,10],[100,0]]};
+const TEX_LABEL=[['Clay',22,58],['Silty\nclay',7,48],['Sandy\nclay',51,40],['Clay loam',33,33],['Silty clay\nloam',10,33],['Sandy clay\nloam',60,27],['Loam',41,17],['Silt loam',22,14],['Silt',7,5],['Sandy loam',63,10],['Loamy sand',82.5,5,'rot'],['Sand',93,2.5]];
+const OKABE=['#0072B2','#E69F00','#009E73','#D55E00','#CC79A7','#56B4E9','#F0E442','#000000'];
+function canvasPainter(ctx){
+ const font=o=>`${o.italic?'italic ':''}${o.weight||400} ${o.size}px Arial, Helvetica, sans-serif`;
+ return {
+  measure(s,o){ctx.font=font(o);return ctx.measureText(s).width;},
+  rect(x,y,w,h,fill){ctx.fillStyle=fill;ctx.fillRect(x,y,w,h);},
+  path(pts,o){ctx.beginPath();pts.forEach(([x,y],i)=>i?ctx.lineTo(x,y):ctx.moveTo(x,y));if(o.close)ctx.closePath();if(o.fill){ctx.fillStyle=o.fill;ctx.fill();}if(o.stroke){ctx.strokeStyle=o.stroke;ctx.lineWidth=o.width||0.5;ctx.lineJoin='round';ctx.lineCap='butt';ctx.stroke();}},
+  circle(x,y,r,o){ctx.beginPath();ctx.arc(x,y,r,0,Math.PI*2);if(o.fill){ctx.fillStyle=o.fill;ctx.fill();}if(o.stroke){ctx.strokeStyle=o.stroke;ctx.lineWidth=o.width||0.4;ctx.stroke();}},
+  text(s,x,y,o){ctx.save();ctx.translate(x,y);if(o.rotate)ctx.rotate(o.rotate*Math.PI/180);ctx.font=font(o);ctx.fillStyle=o.color||'#000';ctx.textAlign=o.anchor==='middle'?'center':o.anchor==='end'?'right':'left';ctx.textBaseline=o.baseline||'alphabetic';ctx.fillText(s,0,0);ctx.restore();}
+ };
+}
+function svgPainter(measureCtx){
+ const out=[],e=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c])),n=v=>+(+v).toFixed(3);
+ return {out,measure:canvasPainter(measureCtx).measure,
+  rect(x,y,w,h,fill){out.push(`<rect x="${n(x)}" y="${n(y)}" width="${n(w)}" height="${n(h)}" fill="${fill}"/>`);},
+  path(pts,o){const d=pts.map(([x,y],i)=>(i?'L':'M')+n(x)+' '+n(y)).join('')+(o.close?'Z':'');out.push(`<path d="${d}" fill="${o.fill||'none'}"${o.stroke?` stroke="${o.stroke}" stroke-width="${n(o.width||0.5)}" stroke-linejoin="round"`:''}/>`);},
+  circle(x,y,r,o){out.push(`<circle cx="${n(x)}" cy="${n(y)}" r="${n(r)}" fill="${o.fill||'none'}"${o.stroke?` stroke="${o.stroke}" stroke-width="${n(o.width||0.4)}"`:''}/>`);},
+  text(s,x,y,o){const bl={middle:'central',top:'hanging',bottom:'text-after-edge',alphabetic:'alphabetic'}[o.baseline||'alphabetic'];out.push(`<text transform="translate(${n(x)} ${n(y)})${o.rotate?` rotate(${n(o.rotate)})`:''}" font-family="Arial, Helvetica, sans-serif" font-size="${n(o.size)}"${o.weight?` font-weight="${o.weight}"`:''}${o.italic?' font-style="italic"':''} fill="${o.color||'#000'}" text-anchor="${o.anchor||'start'}" dominant-baseline="${bl}">${e(s)}</text>`);}
+ };
+}
+function texturePoints(){
+ const pts=[];let missing=0,normalized=0,okCount=0;
+ for(const p of state.points){if(p.status!=='ok')continue;okCount++;const t=topSummary(p),c=dominant(p),u=unit(p);const sa=num(t?.sandtotal_r),si=num(t?.silttotal_r),cl=num(t?.claytotal_r);if(sa===null||si===null||cl===null){missing++;continue;}const tot=sa+si+cl;if(tot<=0){missing++;continue;}if(Math.abs(tot-100)>0.5)normalized++;pts.push({id:p.id,sand:sa*100/tot,silt:si*100/tot,clay:cl*100/tot,order:c?.taxorder||'Not reported',area:u?.areasymbol||'Not reported'});}
+ return {pts,missing,normalized,okCount};
+}
+function triOpts(){return {color:$('triColor').value,labels:$('triLabels').checked,caption:$('triCaption').checked};}
+// All geometry is in points (1/72 in); the same layout drives the screen preview, the 1000 dpi PNG and the SVG.
+function triLayout(P,widthIn,opts,data){
+ const W=widthIn*72,k=Math.min(1.45,Math.sqrt(W/252));
+ const fs={tick:6.5*k,axis:8*k,cls:6*k,leg:6.5*k,cap:5.8*k,id:4.8*k};
+ const mx=32*k,top=12*k,s=W-2*mx,h=s*Math.sqrt(3)/2;
+ let y=top+h+30*k;
+ let groups=[];if(opts.color!=='none')groups=[...new Set(data.pts.map(p=>p[opts.color]))].sort((a,b)=>a==='Not reported'?1:b==='Not reported'?-1:String(a).localeCompare(String(b)));
+ const leg=[];if(groups.length){const rowH=fs.leg*1.7,x0=10*k;let lx=x0,ly=y;for(const g of groups){const w=9*k+P.measure(g,{size:fs.leg})+12*k;if(lx+w>W-6*k&&lx>x0){lx=x0;ly+=rowH;}leg.push({g,x:lx,y:ly});lx+=w;}y=ly+rowH;}
+ let capY=null;if(opts.caption){capY=y+fs.cap;y=capY+fs.cap*0.6;}
+ return {W,H:y+6*k,k,fs,mx,top,s,h,groups,leg,capY};
+}
+function drawTriangle(P,L,opts,data){
+ const {W,H,k,fs,mx,top,s,h}=L,x0=mx,y0=top+h,R3=Math.sqrt(3)/2;
+ const xy=(sand,clay)=>{const silt=100-sand-clay;return [x0+s*(silt+clay/2)/100,y0-s*clay/100*R3];};
+ P.rect(0,0,W,H,'#ffffff');
+ for(let v=10;v<100;v+=10){const g={stroke:'#d4d4d4',width:0.35*k};P.path([xy(100-v,v),xy(0,v)],g);P.path([xy(100-v,0),xy(0,100-v)],g);P.path([xy(v,0),xy(v,100-v)],g);}
+ for(const poly of Object.values(TEX_POLY))P.path(poly.map(([a,b])=>xy(a,b)),{close:true,stroke:'#3a3a3a',width:0.6*k});
+ P.path([xy(100,0),xy(0,0),xy(0,100)],{close:true,stroke:'#000',width:0.9*k});
+ const tl=4*k,lo=6*k,tk={stroke:'#000',width:0.6*k};
+ for(let v=10;v<100;v+=10){
+  let [x,yy]=xy(100-v,v);P.path([[x,yy],[x-tl,yy]],tk);P.text(String(v),x-lo,yy,{size:fs.tick,anchor:'end',baseline:'middle'});          // clay, left edge
+  [x,yy]=xy(0,100-v);P.path([[x,yy],[x+tl*.5,yy-tl*R3]],tk);P.text(String(v),x+lo*.5,yy-lo*R3,{size:fs.tick,anchor:'start',baseline:'middle'}); // silt, right edge
+  [x,yy]=xy(v,0);P.path([[x,yy],[x+tl*.5,yy+tl*R3]],tk);P.text(String(v),x+lo*.5,yy+lo*R3,{size:fs.tick,anchor:'middle',baseline:'top'});        // sand, bottom edge
+ }
+ // Axis titles with vector arrows showing the direction in which each fraction increases.
+ const axisTitle=(label,x,y,deg,arrowSign)=>{const o={size:fs.axis,weight:700,anchor:'middle',baseline:'middle',rotate:deg};P.text(label,x,y,o);
+  const tw=P.measure(label,o),a=deg*Math.PI/180,ux=Math.cos(a)*arrowSign,uy=Math.sin(a)*arrowSign,s0=tw/2+3*k,s1=s0+14*k,hx=x+ux*s1,hy=y+uy*s1,hl=3.2*k,hw=1.6*k;
+  P.path([[x+ux*s0,y+uy*s0],[hx-ux*hl*.6,hy-uy*hl*.6]],{stroke:'#000',width:0.7*k});
+  P.path([[hx,hy],[hx-ux*hl-uy*hw,hy-uy*hl+ux*hw],[hx-ux*hl+uy*hw,hy-uy*hl-ux*hw]],{close:true,fill:'#000'});};
+ const off=22*k;let [cx,cy]=xy(50,50);axisTitle('Clay (%)',cx-off*R3,cy-off*.5,-60,1);
+ [cx,cy]=xy(0,50);axisTitle('Silt (%)',cx+off*R3,cy-off*.5,60,1);
+ [cx,cy]=xy(50,0);axisTitle('Sand (%)',cx,cy+21*k,0,-1);
+ const [ra,rb]=[xy(85,0),xy(90,10)];let rot=Math.atan2(rb[1]-ra[1],rb[0]-ra[0])*180/Math.PI;if(rot>90)rot-=180;if(rot<-90)rot+=180;
+ for(const [name,sa,cl,r] of TEX_LABEL){const [lx,ly]=xy(sa,cl),lines=name.split('\n'),lh=fs.cls*1.12;lines.forEach((ln,i)=>{if(r)P.text(ln,lx,ly,{size:fs.cls*.78,color:'#555',anchor:'middle',baseline:'middle',rotate:rot});else P.text(ln,lx,ly+(i-(lines.length-1)/2)*lh,{size:fs.cls,color:'#555',anchor:'middle',baseline:'middle'});});}
+ const col=g=>OKABE[L.groups.indexOf(g)%OKABE.length];
+ for(const p of data.pts){const [x,yy]=xy(p.sand,p.clay);if(opts.color==='none')P.circle(x,yy,2.1*k,{fill:'#1b1b1b',stroke:'#ffffff',width:0.4*k});else P.circle(x,yy,2.2*k,{fill:col(p[opts.color]),stroke:'#1b1b1b',width:0.35*k});if(opts.labels)P.text(p.id,x+3*k,yy-2.6*k,{size:fs.id,color:'#222'});}
+ for(const it of L.leg){P.circle(it.x+3*k,it.y,2.2*k,{fill:col(it.g),stroke:'#1b1b1b',width:0.35*k});P.text(it.g,it.x+8*k,it.y,{size:fs.leg,baseline:'middle'});}
+ if(L.capY!==null){const d=data;P.text(`USDA texture classes · SSURGO dominant component, ${dl()} · n = ${d.pts.length}${d.normalized?` (${d.normalized} normalized to 100%)`:''}`,10*k,L.capY,{size:fs.cap,color:'#555',baseline:'middle'});}
+}
+function drawTrianglePreview(){
+ const cv=$('triCanvas');if(!cv)return;const data=texturePoints(),opts=triOpts(),widthIn=+$('triWidth').value;
+ const ctx=cv.getContext('2d'),P=canvasPainter(ctx),L=triLayout(P,widthIn,opts,data);
+ const cssW=Math.max(260,Math.min(620,cv.parentElement.clientWidth-32)),dpr=window.devicePixelRatio||1,sc=cssW/L.W;
+ cv.style.width=cssW+'px';cv.style.height=(L.H*sc)+'px';cv.width=Math.round(cssW*dpr);cv.height=Math.round(L.H*sc*dpr);
+ ctx.setTransform(sc*dpr,0,0,sc*dpr,0,0);drawTriangle(P,L,opts,data);
+ $('triPng').disabled=$('triSvg').disabled=!data.pts.length;
+ $('triNote').textContent=data.okCount?`${data.pts.length} of ${data.okCount} queried points plotted (dominant component, ${dl()}).${data.missing?` ${data.missing} lacked complete sand/silt/clay over the interval.`:''}${data.normalized?` ${data.normalized} normalized so sand + silt + clay = 100%.`:''} Exports: ${widthIn} in wide; PNG at 1000 dpi = ${Math.round(widthIn*1000)} px.`:'Points appear once sand, silt and clay are available for the selected depth interval.';
+}
+const CRC_TABLE=(()=>{const t=new Uint32Array(256);for(let n=0;n<256;n++){let c=n;for(let j=0;j<8;j++)c=c&1?0xEDB88320^(c>>>1):c>>>1;t[n]=c>>>0;}return t;})();
+function crc32(bytes){let c=0xFFFFFFFF;for(const b of bytes)c=CRC_TABLE[(c^b)&255]^(c>>>8);return (c^0xFFFFFFFF)>>>0;}
+// Writes a pHYs chunk so the PNG reports its true resolution (1000 dpi) to Word, journals and image editors.
+function setPngDpi(png,dpi){
+ const ppm=Math.round(dpi/0.0254),dv=new DataView(png.buffer,png.byteOffset,png.byteLength),parts=[png.subarray(0,8)];let off=8;
+ while(off<png.length){const len=dv.getUint32(off),type=String.fromCharCode(...png.subarray(off+4,off+8)),end=off+12+len;if(type!=='pHYs')parts.push(png.subarray(off,end));
+  if(type==='IHDR'){const c=new Uint8Array(21),v=new DataView(c.buffer);v.setUint32(0,9);c.set([112,72,89,115],4);v.setUint32(8,ppm);v.setUint32(12,ppm);c[16]=1;v.setUint32(17,crc32(c.subarray(4,17)));parts.push(c);}off=end;}
+ const out=new Uint8Array(parts.reduce((a,p)=>a+p.length,0));let o=0;for(const p of parts){out.set(p,o);o+=p.length;}return out;}
+function downloadBlob(blob,name){const url=URL.createObjectURL(blob),a=document.createElement('a');a.href=url;a.download=name;document.body.append(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),2000);}
+async function exportTrianglePng(){
+ const dpi=1000,widthIn=+$('triWidth').value,opts=triOpts(),data=texturePoints();if(!data.pts.length)return;
+ notify(`Rendering ${widthIn} in texture triangle at ${dpi} dpi…`);await new Promise(r=>setTimeout(r,30));
+ const cv=document.createElement('canvas'),ctx=cv.getContext('2d'),P=canvasPainter(ctx),L=triLayout(P,widthIn,opts,data);
+ cv.width=Math.round(L.W/72*dpi);cv.height=Math.round(L.H/72*dpi);ctx.setTransform(dpi/72,0,0,dpi/72,0,0);drawTriangle(P,L,opts,data);
+ const blob=await new Promise(r=>cv.toBlob(r,'image/png'));
+ if(!blob){notify(`This browser could not allocate a ${cv.width}×${cv.height} px canvas. Use a narrower width or the SVG export.`);return;}
+ downloadBlob(new Blob([setPngDpi(new Uint8Array(await blob.arrayBuffer()),dpi)],{type:'image/png'}),`texture_triangle_${dfile()}_${widthIn}in_1000dpi.png`);
+ notify(`Exported ${cv.width}×${cv.height} px PNG (${widthIn} × ${(L.H/72).toFixed(2)} in at 1000 dpi).`);
+}
+function exportTriangleSvg(){
+ const widthIn=+$('triWidth').value,opts=triOpts(),data=texturePoints();if(!data.pts.length)return;
+ const P=svgPainter(document.createElement('canvas').getContext('2d')),L=triLayout(P,widthIn,opts,data);drawTriangle(P,L,opts,data);
+ const svg=`<?xml version="1.0" encoding="UTF-8"?>\n<svg xmlns="http://www.w3.org/2000/svg" width="${(L.W/72).toFixed(3)}in" height="${(L.H/72).toFixed(3)}in" viewBox="0 0 ${L.W.toFixed(3)} ${L.H.toFixed(3)}">\n<title>USDA soil texture triangle, ${dl()}</title>\n${P.out.join('\n')}\n</svg>\n`;
+ downloadBlob(new Blob([svg],{type:'image/svg+xml'}),`texture_triangle_${dfile()}_${widthIn}in.svg`);notify('Exported vector SVG texture triangle.');
+}
+$('triPng').addEventListener('click',()=>exportTrianglePng().catch(err=>notify('PNG export failed: '+err.message)));
+$('triSvg').addEventListener('click',exportTriangleSvg);
+['triWidth','triColor','triLabels','triCaption'].forEach(id=>$(id).addEventListener('change',drawTrianglePreview));
+let triResize=null;window.addEventListener('resize',()=>{clearTimeout(triResize);triResize=setTimeout(drawTrianglePreview,120);});
+// ---------- Depth interval selection ----------
+function setDepth(top,bottom){top=num(top);bottom=num(bottom);if(top===null||bottom===null||top<0||bottom>300||bottom<=top){notify('Depth interval must satisfy 0 ≤ top < bottom ≤ 300 cm.');return false;}state.depth={top,bottom};notify(`Depth interval set to ${dl()}. Summaries, triangle and exports recalculated from the horizons already retrieved; no new USDA query is needed.`);update();return true;}
+$('depthSel').addEventListener('change',e=>{const v=e.target.value;$('customDepth').hidden=v!=='custom';if(v==='custom'){setDepth($('dTop').value,$('dBot').value);return;}const [a,b]=v.split('-').map(Number);setDepth(a,b);});
+['dTop','dBot'].forEach(id=>$(id).addEventListener('change',()=>setDepth($('dTop').value,$('dBot').value)));
+// Public basemaps with no commercial credentials. USGS tile services are documented at apps.nationalmap.gov/services/.
+const BASEMAPS = {
+ imagery: {url:'https://basemap.nationalmap.gov/arcgis/rest/services/USGSImageryOnly/MapServer/tile/{z}/{y}/{x}',opts:{maxZoom:19,maxNativeZoom:16,attribution:'Imagery: USDA / USGS The National Map'}},
+ topo: {url:'https://basemap.nationalmap.gov/arcgis/rest/services/USGSTopo/MapServer/tile/{z}/{y}/{x}',opts:{maxZoom:19,maxNativeZoom:16,attribution:'Topography: USGS The National Map'}},
+ osm: {url:'https://tile.openstreetmap.org/{z}/{x}/{y}.png',opts:{maxZoom:19,attribution:'&copy; OpenStreetMap contributors (ODbL)'}}
+};
+let activeBaseLayer=null, baseChangeId=0;
+function changeBasemap(kind){
+ if(!state.map)return;
+ if(activeBaseLayer){state.map.removeLayer(activeBaseLayer);activeBaseLayer=null;}
+ const wrap=document.querySelector('.mapwrap');
+ wrap.classList.toggle('no-basemap',kind==='none');
+ const changeId=++baseChangeId;
+ if(kind==='none'){notify('Basemap disabled. Point markers and USDA lookups still work.');return;}
+ const def=BASEMAPS[kind];if(!def)return;
+ let errors=0,loaded=false;
+ const layer=L.tileLayer(def.url,{...def.opts,detectRetina:false,crossOrigin:false});
+ layer.on('tileload',()=>{loaded=true;});
+ layer.on('tileerror',()=>{
+   errors++;
+   if(changeId===baseChangeId&&errors>=3&&!loaded){
+     // Do not silently move to a proprietary basemap or loop through blocked providers.
+     $('basemapSelect').value='none';changeBasemap('none');
+     notify(kind==='osm'?'OpenStreetMap community tile requests were blocked; showing points without a basemap. Choose USGS imagery/topographic instead.':'USGS map tiles unavailable from this network; showing points without a basemap. USDA lookups remain available.');
+   }
+ });
+ activeBaseLayer=layer.addTo(state.map);
+ if(state.markerLayer)state.markerLayer.bringToFront?.();
+}
+if(window.L){
+ state.map=L.map('map',{preferCanvas:true,zoomControl:true}).setView([39.5,-98.35],4);
+ state.markerLayer=L.layerGroup().addTo(state.map);
+ state.map.on('click',e=>inspectMapCoordinate(e.latlng.lat,e.latlng.lng));
+ $('basemapSelect').addEventListener('change',e=>changeBasemap(e.target.value));
+ changeBasemap('imagery');
+}else{$('map').style.display='none';$('mapfallback').style.display='flex';$('basemapSelect').disabled=true;}
+addPoint('Mississippi_Example',33.8727,-90.1412);update();select(0);if(state.map)state.map.setView([39.5,-98.35],4);notify('Example coordinate preloaded. Click “Fetch USDA data” to query USDA directly from this browser, or upload your CSV.');
+</script></body></html>

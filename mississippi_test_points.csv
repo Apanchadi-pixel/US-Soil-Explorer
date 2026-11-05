@@ -1,0 +1,14 @@
+﻿Sample_ID,Latitude,Longitude,Region,Point_Type
+MS_Known_Alligator,33.8727,-90.1412,Mississippi,Known SSURGO map unit from user R result
+MS_Test_01,33.424848,-91.080367,Mississippi,Synthetic near Greenville
+MS_Test_02,33.734957,-90.718606,Mississippi,Synthetic near Cleveland
+MS_Test_03,33.496963,-90.214544,Mississippi,Synthetic near Greenwood
+MS_Test_04,34.225297,-90.568976,Mississippi,Synthetic near Clarksdale
+MS_Test_05,34.395625,-89.506484,Mississippi,Synthetic near Oxford
+MS_Test_06,33.425155,-88.825706,Mississippi,Synthetic near Starkville
+MS_Test_07,33.461984,-88.39325,Mississippi,Synthetic near Columbus
+MS_Test_08,32.33294,-90.208783,Mississippi,Synthetic near Jackson
+MS_Test_09,32.36831,-88.690597,Mississippi,Synthetic near Meridian
+MS_Test_10,31.351479,-89.26907,Mississippi,Synthetic near Hattiesburg
+MS_Test_11,31.553074,-90.454997,Mississippi,Synthetic near Brookhaven
+MS_Test_12,34.242381,-88.731223,Mississippi,Synthetic near Tupelo
